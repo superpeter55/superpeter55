@@ -1,0 +1,28 @@
+raw_assessments = spark \
+  .read \
+  .format("kafka") \
+  .option("kafka.bootstrap.servers", "kafka:29092") \
+  .option("subscribe","assessments") \
+  .option("startingOffsets", "earliest") \
+  .option("endingOffsets", "latest") \
+  .load() 
+raw_assessments.cache()
+raw_assessments.printSchema()
+assessments = raw_assessments.select(raw_assessments.value.cast('string'))
+assessments.show()
+import json
+extracted_assessments = assessments.rdd.map(lambda x: json.loads(x.value)).toDF()
+extracted_assessments.show()
+extracted_assessments.printSchema()
+extracted_assessments.write.parquet("/tmp/extracted_assessments")
+extracted_assessments.registerTempTable('assessments')
+spark.sql("select count(base_exam_id) as number_assessments from assessments").show()
+spark.sql("select count(base_exam_id) as count_learning_git from assessments where exam_name = 'Learning Git'").show()
+spark.sql("select distinct exam_name as course, count(exam_name) as times_taken from assessments \
+group by exam_name order by times_taken desc").show(1,False)
+spark.sql("select distinct exam_name as course, count(exam_name) as times_taken from assessments \
+group by exam_name order by times_taken").show(4,False)
+spark.sql("select min(started_at) as earliest_test,max(started_at) as latest_test from assessments").show(10,False)
+spark.sql("select count(distinct exam_name) from assessments").show()
+spark.sql("select count(distinct exam_name) as unique_assessments from assessments").show()
+exit()

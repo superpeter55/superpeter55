@@ -1,0 +1,16 @@
+  152  cd ~/w205/project-2-superpeter55
+  153  cp ~/w205/course-content//08-Querying-Data/docker-compose.yml .
+  154  curl -L -o assessment-attempts-20180128-121051-nested.json https://goo.gl/ME6hjp``
+  155  docker-compose up -d
+  156  docker-compose logs -f kafka
+  157  docker-compose ps
+  158  docker-compose exec cloudera hadoop fs -ls /tmp/
+  159  docker-compose exec kafka   kafka-topics     --create     --topic assessments     --partitions 1     --replication-factor 1     --if-not-exists     --zookeeper zookeeper:32181
+  160  docker-compose exec mids   bash -c "cat /w205/project-2-superpeter55/assessment-attempts-20180128-121051-nested.json \
+    | jq '.[]' -c \
+    | kafkacat -P -b kafka:29092 -t assessments"
+  161  docker-compose exec spark pyspark
+  162  docker-compose exec cloudera hadoop fs -ls /tmp/
+  163  docker-compose exec spark cat /root/.python_history
+  164  docker-compose exec spark cat /root/.python_history > python_history.txt
+  165  history > superpeter55-history.txt
