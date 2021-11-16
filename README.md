@@ -10,23 +10,37 @@ Currently a work in progress but feel free to take a look at what I have so far!
   <summary><b> Are National Parks becoming more attractive to locals during and post-pandemic? </b></summary>
     
   ### Description
-    
-   <br/>
-    
+  
+  With travel restrictions, border closures and shutdown of businesses across the globe throughout the pandemic, the
+tourism industry has taken a significant financial hit and its outlook is still uncertain. According to the United Nations
+World Tourism Organization (UNWTO), international tourist arrivals have fallen 72% between January 2020 and July
+2021 for the Americas. And for the world, the overall decline in the same period was reported to be 85%.
+  
+  This report seeks to answer the following research question. With statewide travel guidelines to avoid non-essential out-of-state and out-of-country travel in effect throughout the pandemic, our hypothesis is that this would heighten residents’ interest in taking local trips and exploring nature in sites near them during and shortly post-reopening. The purpose of this research is to examine the effect of the pandemic on visitation to national parks. Our goal is to determine the relationship between the number of visitations to parks in the United States and variables including the number of COVID-19 cases and vaccination rate. We will use a causal model to address this research question and determine if higher vaccination rates and lower COVID cases cause more national park visits.
+
+  Interestingly, we determined that monthly park visits have increased with increased COVID cases, COVID deaths, and vaccination numbers. We believe this is due to reduced out-of-state travel and forcing people to find alternative activities during the pandemic like visit parks. More details can be found in the final report below.
+
   ### Skills Used
    
-  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" />
+  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" /> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
    <br/>
     
-  ### Statistical Techniques Used
+  ### Statistical/Data Techniques Used
+  - Linear Modeling / Least Squares Regression
+  - F Tests for Coefficient Significance
+  - Evaluation of Classical Linear Model (CLM) assumptions
+  - Omitted Variable Bias analysis
+  - Logarithmic transformation of data
+  - Data visualization
+  - Exploratory data analysis
+  - Data cleaning
     
    <br/>
     
   ### Report and Code
-  [Final Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/W203%20Final%20Report%2C%20Peter%2C%20Frances%2C%20Nitin.pdf)
+  [Project Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/W203%20Final%20Report%2C%20Peter%2C%20Frances%2C%20Nitin.pdf)
   
-  [R Markdown File for Final Report]()
-    
+  [R Markdown for Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/Final_Report.Rmd)  
   </details>
 
 <details>
@@ -37,7 +51,7 @@ The purpose of this project is build a pipelane that lands data in Hadoop Filesy
     <br/>
   ### Skills Used
 
-<img src="https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16" /> <img src="https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white" /> <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white" /> <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" /> <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white" /> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen" /> <img src="https://img.shields.io/badge/windows%20terminal-4D4D4D?style=for-the-badge&logo=windows%20terminal&logoColor=white" />
+<img src="https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16" /> <img src="https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white" /> <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white" /> <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white" /> <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white" /> <img src="https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white" /> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen" /> <img src="https://img.shields.io/badge/windows%20terminal-4D4D4D?style=for-the-badge&logo=windows%20terminal&logoColor=white" /> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
   
   ### Report
   [Tracking User Activity](https://github.com/superpeter55/superpeter55/blob/main/Projects/data-engineering-project2-superpeter55/Project_2_Report.md)
