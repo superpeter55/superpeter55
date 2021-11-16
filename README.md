@@ -7,6 +7,29 @@ Currently a work in progress but feel free to take a look at what I have so far!
 # Projects
 
 <details>
+  <summary><b> Are National Parks becoming more attractive to locals during and post-pandemic? </b></summary>
+    
+  ### Description
+    
+   <br/>
+    
+  ### Skills Used
+   
+  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" />
+   <br/>
+    
+  ### Statistical Techniques Used
+    
+   <br/>
+    
+  ### Report and Code
+  [Final Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/W203%20Final%20Report%2C%20Peter%2C%20Frances%2C%20Nitin.pdf)
+  
+  [R Markdown File for Final Report]()
+    
+  </details>
+
+<details>
   <summary><b> Tracking User Activity </b></summary>
   
   ### Description
