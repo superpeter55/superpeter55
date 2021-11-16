@@ -1,0 +1,13 @@
+White Pawn = WP
+White Rook = WR
+White Horse = WH
+White Bishop = WB
+White Queen = WQ
+White King = WK
+
+Black Pawn = BP
+Black Rook = BR
+Black Horse = BH
+Black Bishop = BB
+Black Queen = BQ
+Black King = BK
