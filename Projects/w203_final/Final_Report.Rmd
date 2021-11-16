@@ -1,0 +1,973 @@
+---
+title: "Are national parks becoming more attractive to locals during and post-pandemic?"
+author: "Peter Morgan, Frances Leung, Nitin Swarup Sokhey"
+date: "8/6/2021"
+output:
+  pdf_document: default
+  html_notebook: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+# Section 1: Introduction
+
+With travel restrictions, border closures and shutdown of businesses across the globe throughout the pandemic, the
+tourism industry has taken a significant financial hit and its outlook is still uncertain. According to the United Nations
+World Tourism Organization (UNWTO), international tourist arrivals have fallen 72% between January 2020 and July
+2021 for the Americas [1]. And for the world, the overall decline in the same period was reported to be 85% [1]. For
+the California Tourism Board, rebuilding tourism as a more sustainable and resilient sector in the future is a priority.
+
+Tourism has accounted for $144.9 billion dollars in the California economy and
+resulted in $12.2 billion in local and state tax revenue [2]. Tourism also supports 1.2 million jobs in California [2].
+There is a strong motivation to have a deeper understanding on what drives tourism especially during the pandemic
+where everything is so uncertain.
+
+To get a greater understanding of what drives tourism, we will be using national park visits as our outcome variable and gain a greater understanding of what increases visit. Understanding which variables increases visits to national parks is valuable information as it opens the door to follow up studies to see if those same variables cause other sectors of tourism to increase.
+
+This report is structured with nine additional sections. Section 2 describes the research question and the the variables of interest for our research question. Section 3 describes our data sources along with initial exploratory analysis of our data. Section 4 describes our models that we will be using. Section 5 describes the results of our model. Section 6 describes the limitations of our model using the Classical Linear Model (CLM) assumptions. Section 7 is a discussion of omitted variables. Section 8 is our concluding remarks. Section 9 cites our sources, and Section 10 is an appendix of additional charts and figures that were not able to be included in this report.
+
+
+# Section 2: Research Question
+
+With statewide travel guidelines to avoid non-essential out-of-state and out-of-country travel in effect throughout the pandemic, our hypothesis is that this would heighten residents’ interest in taking local trips and exploring nature in sites near them during and shortly post-reopening. The purpose of this research is to examine the effect of the pandemic on visitation to national parks. Our goal is to determine the relationship between the number of visitations to parks in the United States and variables including the number of COVID-19 cases and vaccination rate.
+
+The main reason we hypothesize this position is because we suspect that higher COVID rates decrease travel outside a persons home state, people are more likely to visit national parks close to them where it is easier to reach and easier to adhere to social distancing guidelines.
+
+Understanding our research question is extremely valuable for the California Tourism Board. If we find what increases national park visits, we will have a great framework for follow up studies to be performed to understand what increases more financially lucrative areas of tourism.
+
+We will use a causal model to address this research question and determine if higher vaccination rates and lower COVID cases cause more national park visits. The model will be described further in section 4.
+
+# Section 3: Data
+
+This section describes each of the datasets used and any manipulation that was performed on those datasets. It will also show some exploratory data analysis. More exploratory data analysis can be found in the appendix. For the purposes of this study, we will consider all data prior to or within February 2020 to be "pre-COVID" data and any data points within or after March 2020 to be "post-COVID" data.
+
+## National Park Data
+
+Our national park data is downloaded from the national park service website [4]. To get our initial dataframe, some manual manipulation was necessary. The reason for this is because the national park data was extracted from the website on a monthly basis. This means that the data needed to be downloaded from every month and combined. We collected data from January of 2019 to June of 2021. 
+
+Once all the months were combined in this dataset, each row is a unique park month combination. The additional columns of data that we collect are the number of park visits that month, the difference in visits from this month to last month, the number of visits from the same month last year, the number of year to date visits this year, the number of year to date visits last year, the number of year to date visit differential from this year to last year, and the region of the park. The national park service defines seven regions to classify national parks into. These regions are Alaska, Intermountain, Midwest, National Capital, Northeast, Pacific West, and Southeast.
+
+```{r libraries, echo=FALSE, warning=FALSE, include=FALSE}
+# Libraries
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(zoo)
+library(dplyr)
+library(janitor)
+library(knitr)
+library(kableExtra)
+library(lmtest)
+library(sandwich)
+library(car)
+library(stargazer)
+
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r load data, echo=FALSE}
+# Loading external data for EDA
+df_park_visits <- read.csv(file = '~/lab-2-section11-lab2-team2/data/processed/park_visits_processed/park_visits_cleaned_region.csv')
+df_covid_cases <- read.csv(file = '~/lab-2-section11-lab2-team2/data/interim/cases_deaths/cases_deaths.csv')
+df_covid_cases <- subset(df_covid_cases, select = c(Month,Covid.Cases,Region))
+df_vaccine <- read.csv(file = '~/lab-2-section11-lab2-team2/data/interim/vaccination_rates/fully_vaxed.csv')
+
+d <- read.csv(file = '~/lab-2-section11-lab2-team2/data/processed/df_master_final.csv')
+
+df <- d %>% 
+  mutate(
+  # Convert year_month to date format to enable filtering, sorting and plotting    
+  year_month = as.yearmon(year_month, format="%b %Y"),
+  
+  # Add categorical variable or pre- vs. during/post- pandemic
+  # 1 means during/post- pandemic, 0 means pre-pandemic
+  pandemic = case_when(
+    year_month >= "Mar 2020" ~ "Pandemic",
+    year_month < "Mar 2020" ~ "Pre-Pandemic"),
+  
+  pandemic_indicator = case_when(
+  year_month >= "Mar 2020" ~ 1,
+  year_month < "Mar 2020" ~ 0),
+  
+  # Add year    
+  year = substring(year_month, 5,8)
+  )
+```
+
+
+```{r convert month_year value from character to date and add to df, echo=FALSE}
+# Converting string to date
+month_year = as.yearmon(df_park_visits$this_month, format="%y-%b")
+df_park_visits_2 <- df_park_visits %>%
+  mutate(this_month2 = month_year)
+
+month_year = as.yearmon(df_covid_cases$Month, format="%y-%b")
+df_covid_cases_2 <- df_covid_cases %>%
+  mutate(this_month2 = month_year)
+
+month_year = as.yearmon(df_vaccine$Month, format="%y-%b")
+df_vaccine_2 <- df_vaccine %>%
+  mutate(this_month2 = month_year)
+```
+
+For initial exploration of this data, we are interested in examining how park visits have changed over time. Figure 1 below shows national park visits by month, filtered by the region. The first thing we observe is that it seems that there were more park visits before COVID. You can see that the more park visits in the dataset occurs in the summer of 2019. Another observation is that there appears to be seasonal variation in our data. There are more visits in the summer of COVID time than in the winter of non COVID times. 
+
+``` {r Park visitations bar chart, echo=FALSE,warning=FALSE,fig.align = 'center'}
+# Plotting park visits by month
+park_visits_plot <- df_park_visits_2 %>% 
+  ggplot() +
+  aes(x=this_month2, y=this_year_monthly, fill = region_key) +
+  geom_col() +
+  labs( 
+    title    = 'Figure 1: US Park Visitations',
+    x        = 'Year-Month',
+    y        = 'Number of park visitations',
+    color     = 'Region'
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+park_visits_plot
+```
+
+To account for seasonal effect in our exploration, we turn to figures 2 and 3. Figures 2 and 3 show us the difference in the number of visitations in parks compared to last year, also filtered by region. The chart shows that visitations in 2019 were fairly static and followed a similar trend to the data in 2018. However, once February of 2020 hits, we see a drastic decrease in park visits compared to the previous year. This trend continues up until March of 2021. March of 2021 had slightly more park visitations than March of 2020 and that trend continues up until June of 2021. 
+
+``` {r Park visitations YOY by month, echo = FALSE ,fig.align = 'center',fig.width=12}
+# plotting park visit differenctial by month
+park_visits_month_diff_plot <- df_park_visits_2 %>% 
+  ggplot() +
+  aes(x=this_month2, y=month_diff, fill = region_key) +
+  geom_col() +
+  labs( 
+    title    = 'Figure 2: US Park Visitations YOY difference by month',
+    x        = 'Year-Month',
+    y        = 'Number of park visitations',
+    color     = 'Region'
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+park_visits_month_diff_plot
+```
+
+The boxplots in Figure 3 shows the monthly changes in park visits compared to the previous year in the same month. We can see that when the two pools of pre-pandemic and post-pandemic data are compared side-by-side, there is an evident increase of park visits during pandemic for all regions. It is because of this observation in particular that motivates our investigation on the effect of pandemic related variables such as COVID cases, vaccination numbers, etc. on park visitations.
+
+
+``` {r boxplots all time pre and post pandemci compare, fig.length=14}
+df2 <- df
+df2[is.na(df2)] <- 0
+df_boxplot <- df2 %>%
+  select(c(park_name, region, park_ty_monthly, park_month_diff, pandemic))
+
+park_box_all_time <- ggplot(df_boxplot, aes(y = park_month_diff, fill=region)) +
+  geom_boxplot() + 
+  facet_wrap(~pandemic) +
+  stat_boxplot(geom = 'errorbar') +
+  scale_y_continuous(trans = 'log10') + 
+  theme(legend.position="bottom", legend.box = "horizontal") +
+  labs(
+    title="Figure 3: Changes in monthly park visits compared to previous year", 
+    y="Changes in park visits compared to previous year (log10)",
+    x="",
+    fill = "Region"
+    ) +
+
+theme(
+  axis.text.x = element_blank(),
+  axis.ticks.x = element_blank(),
+  panel.background = element_blank(),
+  axis.line = element_line(colour = "grey")
+  )
+
+park_box_all_time
+```
+
+
+
+## COVID Case Data
+
+Our COVID Cases dataset was downloaded from the New York Times COVID-19 dataset [5]. This file contains data where each datapoint is a unique date and state combination. The raw data has dates from January 21st 2020 to present day. The data will be cut off at the end of June because that is how far we are going for our park data and any data before January 21st 2020 will be reported as values of zero because there are no reported COVID cases in the United States before that date [5].
+
+The raw data file is made up of three additional columns beyond date and state. These columns are fips which is a state identifier that will be removed, the number of COVID cases on that date, and the number of COVID deaths on that date. To get the number of COVID cases per month, the sum of cases and deaths for all days in a specified month are reported and the data is transformed to have monthly rows instead of daily rows. Figure 4 below shows the distribution of COVID cases across by month filtered by region. As you can see, the number of cases maximizes in the beginning of 2021 and end of 2020. According to our hypothesis, this should be the area with the least quantity of park visits
+
+``` {r covid cases by month, echo = FALSE ,fig.align = 'center'}
+# Plotting Covid Cases by month
+covid_cases_plot <- df_covid_cases_2 %>% 
+  ggplot() +
+  aes(x=this_month2, y=Covid.Cases, fill = Region) +
+  geom_col() +
+  labs( 
+    title    = 'Figure 4: US Covid Cases by Month',
+    x        = 'Year-Month',
+    y        = 'Number of COVID Cases',
+    color     = 'Region'
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+covid_cases_plot
+```
+
+## Vaccination Data
+
+Our vaccination data was downloaded from the CDC website [6]. The raw data file contains 27 columns. Each row has a unique state date combination. The first step in cleaning the data is removing any unnecessary columns. This leaves us with 6 remaining columns which are date, state, percentage of fully vaccinated people, number of fully vaccinated people, number of people who have received the first does of the vaccine, and percentage of people who have received the first dose of the vaccine. The region column is appended on based on the state using a mapping table. After this, some rows are dropped as well. This dataset contains data on every single day. We are only interested in monthly data so we drop all data that is not the last day of the month. The last day of the month will contain accurate data on how many people were vaccinated by the end of the month.
+
+We explore this data using figure 5 below. This figure shows the number of people who have received at least the first dose of the vaccine each month filtered by region. This plot shows that ever since February, there has been an increase in vaccinations administered among all regions while the trend plateaus as we move closer to present day. Our hypothesis says that higher national park visits should occur more recently as there are more vaccinations administered at this time.
+
+``` {r vaccinations by month, echo = FALSE ,fig.align = 'center'}
+# Plotting Vaccines by month
+vaccine_plot <- df_vaccine_2 %>% 
+  ggplot() +
+  aes(x=this_month2, y=Quantaty.At.Least.1.Vax, fill = Region) +
+  geom_col() +
+  labs( 
+    title    = 'Figure 5: US First Dose Recipients by Month',
+    x        = 'Year-Month',
+    y        = 'Number of First Dose Vaccines Administered',
+    color     = 'Region'
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+vaccine_plot
+```
+
+## Mapping Tables and Other Data Sources
+
+We have discussed the main sources of data that will be analyzed in our project. However, there are a few more data sources and mapping tables that are used in this analysis that will be described here.
+
+The first data source is from the 2020 U.S. census [7]. This data is used for population metrics to calculate statewide COVID case data normalized by population. We analyzed data from 2019, 2020, and 2021 in this analysis. For the purposes of this study we will assume that all the state population values are equal to the population reported in 2020.
+
+We also have two manually created mapping tables to assist with data joining. The first mapping table maps every state to a region. This makes it easy to add a region column when necessary. The second mapping table maps every national park to a state. This data was not available for download in the national park dataset as only the region was included. This will assist with data joining as described below.
+
+## Data Joining
+
+First, the state column is added to the national park dataset using the national park state mapping table. Next, the COVID case dataset is joined to the national park dataset by state, and month. The vaccination data is then joined by state and month. In the end, we have a dataframe where each row is a unique park, month combination.
+
+\newpage
+
+# Section 4: Statistical Model
+
+```{r import master dataset, mutate for modeling, warning=FALSE}
+d <- read.csv(file = '~/lab-2-section11-lab2-team2/data/processed/df_master_final.csv')
+
+df <- d %>% 
+  mutate(
+  # Convert year_month to date format to enable filtering, sorting and plotting    
+  year_month = as.yearmon(year_month, format="%b %Y"),
+  
+  # Add categorical variable or pre- vs. during/post- pandemic
+  # 1 means during/post- pandemic, 0 means pre-pandemic
+  pandemic = case_when(
+    year_month >= "Mar 2020" ~ "Pandemic",
+    year_month < "Mar 2020" ~ "Pre-Pandemic"),
+  
+  pandemic_indicator = case_when(
+  year_month >= "Mar 2020" ~ 1,
+  year_month < "Mar 2020" ~ 0),
+  
+  # Add year    
+  year = substring(year_month, 5,8)
+  )
+```
+
+``` {r select samples for specific regions only for modeling, echo=FALSE}
+# The df_filtered data frame includes data for specific regions only 
+# The modeling below were built for group discussion purposes
+# The 3 regions that are to be made into the report for are tentatively Northeast, Intermountain and "Pacific West
+df_filtered <- df %>%
+  filter(region == c("Northeast", 
+                     "Intermountain", 
+                     "Pacific West"),
+         
+         state != c("American Samoa",
+                     "Guam",
+                     "Northern Mariana Islands",
+                     "Virgin Islands"
+                     )
+         )
+# df dataframe has data for all of US
+df_filtered[is.na(df_filtered)] <- 0
+# Show summary of filtered data frame
+#summary(df_filtered)
+```
+
+To investigate the research question **Are national parks becoming more attractive to locals during and post-pandemic?**, we examined the effects of pandemic related input variables on park visitations by building numerous linear regression models for comparisons. The input/output variables that were considered are described in the two tables below. 
+
+Table 1 describes the model setup for 5 models (Models 1a to 5a) using pandemic input variables in the form of numbers.
+
+Table 2 describes the model setup for the equivalents (Models 1b to 5b) using pandemic input variables in the form of rates. Model 5a is the same as Model 4a except for the use of y2 for month park visits instead of y1 for park visit changes as a comparison. The same is true for Models 5b and 4b.
+
+``` {r modeling setup table1}
+model_setup <- data.frame(
+  Variable =
+    c("y1 - Park visit changes",
+      "y2 - Monthly park visits",
+      "x1 - # of COVID cases",
+      "x2 - # of 1st dose vaccination",
+      "x3 - # of COVID deaths",
+      "x4 - # of full vaccination",
+      "x9 - Pandemic indicator"
+      ),
+  
+  model_1a  = c("y1","--", "x1", "x2", "--", "--", "-"),
+  model_2a = c("y1","--", "x1", "x2", "x3", "--", "-"),
+  model_3a = c("y1", "--", "x1", "x2", "x3", "x4", "-"),
+  model_4a = c("y1", "--", "x1", "x2", "x3", "x4", "x9"),  
+  model_5a = c("--", "y2", "x1", "x2", "x3", "x4", "x9")
+  
+)
+table1 <- knitr::kable(model_setup,
+             format = "pipe",
+             caption = "Linear regression models (With pandemic inputs as #'s)",
+             col.name=c("Variables",
+                        "Model 1a","Model 2a","Model 3a","Model 4a","Model 5a"
+                        ),
+             align=c("l",
+                     "c","c","c","c","c"
+                     )
+            )
+table1
+```
+
+
+``` {r modeling setup table2}
+model_setup <- data.frame(
+  Variable =
+    c("y1 - Park visit changes",
+      "y2 - Monthly park visits",
+      "x5 - Rate of COVID cases",
+      "x6 - Rate of 1st dose vaccination",
+      "x7 - Rate of COVID deaths",
+      "x8 - Rate of full vaccination",
+      "x9 - Pandemic indicator"
+      ),
+  
+  model_1b  = c("y1","--", "x5", "x6", "--", "--", "-"),
+  model_2b = c("y1","--", "x5", "x6", "x7", "--", "-"),
+  model_3b = c("y1", "--", "x5", "x6", "x7", "x8", "-"),
+  model_4b = c("y1", "--", "x5", "x6", "x7", "x8", "x9"),  
+  model_5b = c("--", "y2", "x5", "x6", "x7", "x8", "x9")
+  
+)
+table2 <- knitr::kable(model_setup,
+             format = "pipe",
+             caption = "Linear regression models (with pandemic inputs as rates)",
+             col.name=c("Variables",
+                        "Model 1b","Model 2b","Model 3b","Model 4b","Model 5b"
+                        ),
+             align=c("l",
+                     "c","c","c","c","c"
+                     )
+            )
+table2
+```
+
+## Description of variables
+
+The letter **y** denotes output variables. The letter **x** denotes input variables. A total of 2 output variables and 9 input variables were examined. For each of COVID cases, COVID deaths, 1st dose vaccination and full vaccination, both measures in monthly counts (variables x3 ) and monthly rates (based on the respective state's population) were available in the sample data.
+
+### Output variable - Park visitations
+
+The full data set assembled has 11,310 monthly park visitation data points from 385 national parks in 7 regions across the United States. Park visitations data from January 2019 to June 2021 were available at the time the research was conducted. Both the changes in monthly park visitations compared to the previous year (**denoted as y1**) and monthly park visitations (**denoted as y2**) were available. 
+
+Given the research question focuses on analyzing the **difference** in park visitation numbers between pre- and during/post-pandemic, we have chosen **y1** as the output variable for Models 1a to 4a. As a comparison or the effect of the use of rates vs. numbers, we used **y2** as the output variable for Model 5a and 5b.
+
+### Categorical variable - Pandemic indicator
+
+Aside from the source data retrieved on park visitations, COVID cases/deaths and COVID vaccination, we also added a categorical variable to depict whether the data point is related to the pre-pandemic vs. during/post-pandemic time frame. For all monthly data points that occurred prior to March 2020, we considered that as being "Pre-pandemic" and denoted the indicator as 0. For all data points that occurred within or after March 2020, we considered that as being "Pandemic" and denoted the indicator as 1. The Pandemic Indicator variable is represented by x9 in the model. This categorization simplifies the modeling as we were not performing any time series analysis in this research. Time become either it is pandemic or not pandemic.  
+
+### Selection of data points to use for modelling
+
+Given the full sample dataset covers the entire United States, we extracted data from the top 3 out of the 7 regions for modeling purposes. This step was taken because it is very unlikely for a single model to describe patterns from the entire country. We also decided not to use a single region but a few to ensure that there is at least some randomness in the sample data and covers geographies that are not entirely adjacent to each other. The 3 regions chosen to be included in the modeling were Intermountain, Northeast and Pacific West. 
+
+These were also made cause these are the regions where there is a higher concentration of parks. Pacific West was chosen because California state alone has the highest number of parks in the country. The below tables depicts somem summary statistics on parks by regions and states. 
+
+
+``` {r parks summary statistics}
+# distinct parks by region and state
+distinct_parks <- distinct(df, park_name, state, region)
+park_by_region <- tabyl(distinct_parks, region) %>% 
+  adorn_pct_formatting(digits = 2) %>%
+  adorn_totals() %>%
+  arrange(desc(n))
+#kable(park_by_region, caption='Park distribution by 7 US regions')
+park_by_state <- tabyl(distinct_parks, state) %>% 
+  adorn_pct_formatting(digits = 2) %>%
+  adorn_totals() %>%
+  arrange(desc(n))
+#kable(head(park_by_state,n=10), caption='Park distribution by top 7 states')
+table3_4 <- 
+  knitr::kable(list(park_by_region,head(park_by_state,n=8)), 
+               caption="Park distribution by 7 US regions and top 7 states"
+               ) %>%
+  kable_styling(latex_options = "HOLD_position")
+table3_4
+```
+
+\newpage 
+
+### Transformation on variables
+
+A review of park visitation distribution with histograms across all 7 US regions shows that it has a very skewed distribution to the left. Because of this, we applied a logarithmic transformation on park visits related output variables. To enable logarithmic transformation on changes to park visits, we also needed to take the absolute values of the park visit changes to convert negative values into positive values. See figure 6 below for the comparison before (left panel) and after (right panel) the transformation. 
+
+Another transformation to the data that was applied was to convert any NA values that arose after joining the park visits data with the COVID and vaccination data to zero. The NA would be because there are no COVID cases or vaccination happening yet pre-pandemic. 
+
+``` {r EDA histogram for park visits by region, message=FALSE, warning=FALSE,fig.length=12}
+# Histogram of unique park visits
+unique_parks <- unique(
+  df %>%
+    select(c(park_name, region, park_ty_monthly, park_month_diff, year_month))
+  )
+park_hist <-unique_parks %>% 
+  ggplot() + 
+  facet_wrap(~region) +
+  aes(abs(park_month_diff)) + 
+  geom_histogram() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(
+    title="Figure 6: Histograms of Park Visits", 
+    x="Park visit changes (Absolute Values)",
+    y="Count",
+    fill = "Region"
+    ) +
+  theme(axis.text=element_text(size=8),
+        axis.title=element_text(size=8),
+        plot.title=element_text(size=10)
+        )
+#park_hist
+park_diff_hist <-unique_parks %>% 
+  ggplot() + 
+  facet_wrap(~region) +
+  scale_x_continuous(trans = 'log10') + 
+  aes(abs(park_month_diff)) + 
+  geom_histogram() + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(
+    #title="Histograms of monthly changes in US park visits per park",
+    x="Log10 of Park visit changes (Absolute Values)",
+    y="Count",
+    fill = "Region",
+    ) +
+  theme(axis.text=element_text(size=8),
+        axis.title=element_text(size=8))
+#park_diff_hist
+park_hist + park_diff_hist 
+```
+
+\newpage
+## Linear regression model equations
+
+The 10 models that we formulated have mathematical equations shown below. There are 2 sets with 5 models for each. 
+
+### Set 1 - Linear regression models (With pandemic inputs as #'s)
+
+**Model 1a - Base model with # of COVID cases and # of 1st dose vaccination as inputs, changes in park visits as output**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} = \beta_0 + \beta_1 \text{ (Number of COVID cases) }  + \beta_2 \text{ (Number of 1st dose vaccination) }
+\end{split}
+\end{equation}
+
+**Model 2a - Model 1a plus # of COVID deaths**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_1 \text{ (Number of COVID cases) }  + \beta_2 \text{ (Number of 1st dose vaccination) }\\ 
+& + \beta_3 \text { (Number of COVID deaths)} 
+\end{split}
+\end{equation}
+
+**Model 3a - Model 2a plus # of full vaccination**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_1 \text{ (Number of COVID cases) }  + \beta_2 \text{ (Number of 1st dose vaccination) }\\ 
+& + \beta_3 \text { (Number of COVID deaths)}\\
+& + \beta_4 \text { (Number of full vaccination)}
+\end{split}
+\end{equation}
+
+**Model 4a - Model 3a plus categorical variable pandemic indicator**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_1 \text{ (Number of COVID cases) }  + \beta_2 \text{ (Number of 1st dose vaccination) }\\ 
+& + \beta_3 \text { (Number of COVID deaths)}\\
+& + \beta_4 \text { (Number of full vaccination)}\\
+& + \beta_9 \text { (Pandemic indicator)}
+\end{split}
+\end{equation}
+
+**Model 5a - Same as Model 4a but output variable becomes number of park visits**
+\begin{equation} 
+\begin{split}
+\text{Park visits} & = \beta_0 + \beta_1 \text{ (Number of COVID cases) }  + \beta_2 \text{ (Number of 1st dose vaccination) }\\ 
+& + \beta_3 \text { (Number of COVID deaths)}\\
+& + \beta_4 \text { (Number of full vaccination)}\\
+& + \beta_9 \text { (Pandemic indicator)}
+\end{split}
+\end{equation}
+
+\newpage
+### Set 2 - Linear regression models (With pandemic inputs as rates)
+
+**Model 1b - Base model with rate of COVID cases and rate of 1st dose vaccination as inputs, changes in park visits as output**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} = \beta_0 + \beta_5 \text{ (Rate of COVID cases) }  + \beta_6 \text{ (Rate of 1st dose vaccination) }
+\end{split}
+\end{equation}
+
+**Model 2b - Model 1b plus rate of COVID deaths**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_5 \text{ (Rate of COVID cases) }  + \beta_6 \text{ (Rate of 1st dose vaccination) }\\ 
+& + \beta_7 \text { (Rate of COVID deaths)} 
+\end{split}
+\end{equation}
+
+**Model 3b - Model 2b plus rate of full vaccination**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_5 \text{ (Rate of COVID cases) }  + \beta_6 \text{ (Rate of 1st dose vaccination) }\\ 
+& + \beta_7 \text { (Rate of COVID deaths)}\\
+& + \beta_8 \text { (Rate of full vaccination)}
+\end{split}
+\end{equation}
+
+**Model 4b - Model 3b plus categorical variable pandemic indicator**
+\begin{equation} 
+\begin{split}
+\text{log10(abs(Park visit changes))} & = \beta_0 + \beta_5 \text{ (Rate of COVID cases) }  + \beta_6 \text{ (Rate of 1st dose vaccination) }\\ 
+& + \beta_7 \text { (Rate of COVID deaths)}\\
+& + \beta_8 \text { (Rate of full vaccination)}\\
+& + \beta_9 \text { (Pandemic indicator)}
+\end{split}
+\end{equation}
+
+**Model 5b - Same as Model 4b but output variable becomes number of park visits**
+\begin{equation} 
+\begin{split}
+\text{Park visits} & = \beta_0 + \beta_1 \text{ (Rate of COVID cases) }  + \beta_2 \text{ (Rate of 1st dose vaccination) }\\ 
+& + \beta_3 \text { (Rate of COVID deaths)}\\
+& + \beta_4 \text { (Rate of full vaccination)}\\
+& + \beta_9 \text { (Pandemic indicator)}
+\end{split}
+\end{equation}
+
+``` {r model building, echo=FALSE, message=FALSE, warning=FALSE}
+model_1a <- lm(log10(abs(park_month_diff)+1) ~ covid_cases + one_dose_num, data=df_filtered)
+model_2a <- lm(log10(abs(park_month_diff)+1) ~ covid_cases + one_dose_num + covid_deaths, data=df_filtered)
+model_3a <- lm(log10(abs(park_month_diff)+1) ~ covid_cases + one_dose_num + covid_deaths + fully_vax_num, data=df_filtered)
+model_4a <- lm(log10(abs(park_month_diff)+1) ~ covid_cases + one_dose_num + covid_deaths + fully_vax_num + pandemic_indicator, data=df_filtered)
+model_5a <- lm(log10(park_ty_monthly+1) ~ covid_cases + one_dose_num + covid_deaths + fully_vax_num + pandemic_indicator, data=df_filtered)
+model_1b <- lm(log10(abs(park_month_diff)+1) ~ covid_cases_rate + one_dose_rate, data=df_filtered)
+model_2b <- lm(log10(abs(park_month_diff)+1) ~ covid_cases_rate + one_dose_rate + covid_deaths_rate, data=df_filtered)
+model_3b <- lm(log10(abs(park_month_diff)+1) ~ covid_cases_rate + one_dose_rate + covid_deaths_rate + fully_vax_rate, data=df_filtered)
+model_4b <- lm(log10(abs(park_month_diff)+1) ~ covid_cases_rate + one_dose_rate + covid_deaths_rate + fully_vax_rate + pandemic_indicator, data=df_filtered)
+model_5b <- lm(log10(park_ty_monthly+1) ~ covid_cases_rate + one_dose_rate + covid_deaths_rate + fully_vax_rate + pandemic_indicator, data=df_filtered)
+```
+
+\newpage
+
+# Section 5: Results from Model
+
+The results from the regression for selected models are described in the below sections. Models 1b, 3b and 5b from **Set 2 - Linear regression models (with pandemic inputs as rates)** are as follows. The models are listed as (1), (2) and (3) respectively in the table. 
+
+``` {r model comparisons 1b, 3b, 5b, echo=FALSE, message=FALSE, warning=FALSE}
+star <- stargazer(
+  model_1b,
+  #model_2b,  
+  model_3b,
+  #model_4b,  
+  model_5b,
+  
+  type = 'text',
+  header=FALSE, # to get rid of r package output text
+  no.space = TRUE, # to remove the spaces after each line of coefficients
+  column.sep.width = "0.05pt", # to reduce column width
+  font.size = "tiny", # to make font size smaller
+  align = TRUE,
+  #dep.var.labels = "Park visits",
+  dep.var.labels.include = TRUE
+)
+```
+
+Based on the results, the majority of the pandemic related variables are statistically and significantly different from zero. With this, we can reject the null hypothesis that the coefficients are zero. There is however some instability in terms of the signs of the coefficients that switch between positive and negative. This applies to both the one_dose_rate and covid_cases_rate.
+
+From a residual standard error perspective, all models above have relatively low residuals. From a significance perspective, Model 5b (depicted as (3) above) appears to describe the patterns of the sample data points the best out of all. However, with an adjusted R2 of 0.065, it means that the model is only capable of describing ~ 6.5% of the data points. 
+
+Based on the fitted model, Model 5b above, our multivariate least squares regression formula becomes:
+
+\begin{equation} 
+\begin{split}
+\text{Park visits} & = 3.914 + 38.489 \cdot\text{ (Rate of COVID cases) }  + 0.025 \cdot\text{ (Rate of 1st dose vaccination) }\\ 
+& - 2824.811 \cdot\text { (Rate of COVID deaths)}\\
+& - 0.023 \cdot\text { (Rate of full vaccination)}\\
+& - 0.0431 \cdot\text { (Pandemic indicator)}
+\end{split}
+\end{equation}
+
+The interpretation of the above equation is as follows:
+
+* When the rate of COVID cases increases by 1, there will be 38.489 times more monthly park visits, all else being equal
+* When the 1st dose vaccination rate increases by 1, there will be 2.5% more park visits, all else being equal
+* When the COVID death rate increases by 1, there will be a decrease in 2,824.811 times fewer monthly park visits, all else being equal
+* When the full vaccination rate increase by 1, there will be a decrease of 2.3% of park visits, all else being equal
+* During a pandemic, park visits decrease overall by 43.1%, all else being equal
+
+While this model that encapsulates the most variables (all being statistically significant) predicts that the higher the number of COVID cases and the higher the 1st dose vaccination, the more park visits there would be, it suggests that COVID death rate and full vaccination rate would however would counter park visitations. It also predicts that when there is a pandemic, the park visits overall would drop. All of these predictions appear to be in alignment with our hypothesis that interests in national parks heightens at the time of a pandemic. A logical explanation for why there may be a decrease in park visits when the fully vaccination rate goes up is that people perhaps become more confident and feel less restrictive to expand the types of activities that they would like to engage outside of nature seeking outdoor activities such as visitation to parks. Furthermore, there are likely some collinearity that exists across some of the variables such as fully_vax_rate and one_dose_rate as well as COVID_cases_rate and COVID_deaths_rate, despite all of them resulted in being significant in the model. 
+
+Models 1a, 3a and 5a from **Set 1 - Linear regression models (with pandemic inputs as #'s)** are as follows. The models are listed as (1), (2) and (3) respectively in the table. 
+
+``` {r model comparisons 1a to 5a, echo=FALSE, message=FALSE, warning=FALSE}
+star <- stargazer(
+  model_1a,
+  #model_2a,  
+  model_3a,
+  #model_4a,  
+  model_5a,
+  
+  type = 'text',
+  header=FALSE, # to get rid of r package output text
+  no.space = TRUE, # to remove the spaces after each line of coefficients
+  column.sep.width = "0.05pt", # to reduce column width
+  font.size = "tiny", # to make font size smaller
+  align = TRUE,
+  #dep.var.labels = "Park visits",
+  dep.var.labels.include = TRUE
+)
+```
+
+\newpage
+
+# Section 6: Limitations of Model
+
+Below we discuss several of the assumptions of the Classical Linear Model (CLM) adn whether our model satisfies them:
+
+## Assumption 1: Independent and Identically Distributed (IID)
+
+Unfortunately, given the nature of the data, our model fails the first requirement of any classical model, that the data is IID. Given the broad natrue of our observations (i.e. cases per region) we acknowledge that there may be several issues with the assumption that our data was drawn independently from an identically distributed population (IID), which may diminish the ability of our final model to fully answer the research question as originally 10 posed, or may result in greater uncertainty than the model's standard errors suggest. In considering the IID assumption it is first useful to explicitly identify the population from which our sample is drawn, and about which it is supposed to make inferences.
+
+The population is effectively all the people in the United States and the sampling in our research is just the aggregation of the population into the regions and states. Although we have regional indicators such as "Southeast, Midwest, ...." that group of states that share similar characteristics and help to draw some of the dependence between the data points into measurable form. Viewed in this way it is fairly obvious that this poses some clear challenges to the assumption of independence.
+
+These issues with the IID assumption are one reason why we need to be cautious with how we interpret the model's results, and do not overstate how they would generalize to the population. The clustering of states is problematic, but geographical and political clustering of observations would still be an issue with more granular data, e.g. at the county level.
+
+## Assumption 2: Linear Conditionaly Expectation
+
+The second assumption required for a classical linear model is that there is a linear conditional expectation in the exploratory variables. The best way to check for this assumption is through visually inspecting plots of the model residuals on the y-axis against each explainer on the x-axis. A plot of the fitted points against the residuals is also a useful tool, especially when there are too many variables to plot, as it captures the model to the whole. Looking at only fitted values against the residuals can hide issues in individual components though, so we prefer to look at each explainer individually if able. Having mainly 3 variables helps to do so concisely.
+
+Our model as a whole passes the visual test for linearity at higher values, with our model consistently over predicting these points (as shown in Figure 7). Given the weight of evidence, we must conclude that this assumption is met. What this means for our models is that while it remains the best linear predictor for the data given, the coefficients are reflective of the true relationship between the variables and outcome.
+
+```{r residual vs fitted}
+#Plotting residuals vs. fitted
+df_filtered %>% 
+  mutate(
+    model_preds = predict(model_5b), 
+    model_resids = resid(model_5b)
+  ) %>% 
+  ggplot(aes(model_preds, model_resids)) + 
+  geom_point() + 
+  stat_smooth() +
+  labs(
+    title="Figure 7: Residuals vs. Predicted Values",
+    x="Model Predicted Values",
+    y="Model Residuals")
+```
+
+## Assumption 3: Homoscedasticity
+
+This assumption refers to the variance of the residual, or error term, in a regression model being constant. The variance of the errors should be consistent for all observations. In other words, the variance does not change for each observation or for a range of observations. This preferred condition is known as homoscedasticity (same scatter). If the variance changes, we refer to that as heteroscedasticity (different scatter).
+
+The easiest way to check this assumption is to create a residuals versus fitted value plot. On this type of graph, heteroscedasticity appears as a cone shape where the spread of the residuals increases in one direction. The diagnostic plot can be found in the same figure as above;i.e. Figure 7.
+
+It can be observed in the plot above that the majority of time, the variance is constant for a sizable portion of the observations. This means that the variance has been constant and thus homoscedasticity of the variance is maintained. Hence, this assumption is met.
+
+## Assumption 4: No Perfect Collinearity
+
+Multicollinearity means that two or more regressors in a multiple regression model are strongly correlated. If the correlation between two or more regressors is perfect, that is, one regressor can be written as a linear combination of the other(s), we have perfect multicollinearity. While strong multicollinearity in general is unpleasant as it causes the variance of the OLS estimator to be large (we will discuss this in more detail later), the presence of perfect multicollinearity makes it impossible to solve for the OLS estimator, i.e., the model cannot be estimated in the first place.
+
+In the case of strong collinearity, we calculated the paired-correlations of the variables contained in our model. Since we have only 3 major variables, the analysis was pretty easy and it turned out that none of the paired combinations of variables were having 1 as their correlation. Thus, this assumption is met.
+
+```{r testing colinearity}
+#testing collinearity
+print("Covid Cases and Vaccinations")
+cor(df_filtered$covid_cases,df_filtered$one_dose_num)
+print("Covid Cases and Deaths")
+cor(df_filtered$covid_cases,df_filtered$covid_deaths)
+print("Vaccinations and Deaths")
+cor(df_filtered$covid_deaths,df_filtered$one_dose_num)
+```
+
+## Assumption 5: Normally Distributed Errors
+
+The normality assumption is needed to determine the shape of the sampling distribution for our estimator coefficients. By looking at the Normal QQ plot of the model's residuals, we see that the model is almost normal except that the tails are smaller than a normal curve. It of course fails the strict Shapiro-Wilk test of normality.
+
+However, even if the errors are non-normal, a version of the CLM says that the sampling distribution for the estimator coefficients becomes normal as the number of observations increases. We have plenty of observations more than the typical rule of thumb value of 30 where the CLM becomes applicable. Given the large number of observations, we can confidently apply the CLM in this case and the spirit of the requirement is satisfied. (Spirit of requirement just wants the sampling distribution of beta to be normal. CLM says it will be.) 
+
+On inspection (Figure 8) we find no obvious evidence of deviations from normality that concerns us; there are some slight deviations from the perfect normal line at the upper and lower ends of the plot, but these are within the limits. Hence, this assumption is also met.
+
+
+```{r qq plot}
+# Plotting qq plot
+qq <- df_filtered %>%
+  mutate(
+    model_preds = predict(model_5b), 
+    model_resids = resid(model_5b)
+  ) %>% 
+  ggplot(aes(sample = model_resids)) + 
+  stat_qq() + stat_qq_line() +
+  labs(
+    title="Figure 8: QQ plot",
+    x="Standardized Residuals",
+    y="Theoretical Quantiles")
+qq
+```
+
+
+# Section 7: Discussion of Omitted Variables
+
+One of regression analysis’ most serious problems occurs when omitted variables affect the relationship between the dependent variable and included explanatory variables. If researchers estimate without considering that the true slope is affected by other variables, then they obtain a slope estimate that is a constant, in contrast to the true slope. 
+
+The main relationship we explored in our model was between visits in parks in different regions of the US along with COVID-19 cases and vaccination rate. Park's visit is an extremely complicated topic with complex relationships with many of the variables we considered, in which directions of causality are often unclear or even disputed. For example, there is a correlation of ¥ =0.108 between vaccination of people and deaths due to COVID-19. In terms of causality we could easily argue that being vaccinated might not lead to fatal death, and likewise we could argue that the death could be avoided if the citizens are vaccinated. This is called the effect of the reverse Omitted variable. Similar bi-directional causal arguments could be made for the relationship between park visit and several of the variables we considered (e.g. COVID cases, COVID deaths, etc.) We do not suggest that a simple linear model could capture such a tangled web of causality, and hence we do not attempt to determine specific omitted variables that may causally introduce large biases to our model. However, in terms of additional variables which we didn’t include that we believe may improve our model’s performance in explaining the variance in COVID-19 deaths between different regions, we do suggest two particular variables that we would seek to explore further in any follow up of this study:
+
+**Seasons:** There are three main seasons, Spring, Summer and Fall. Usually national parks would have more visitations in summer and spring season as compared to fall because of the snowfall which covers several roads and mountains across North America. It thus affects the ability to travel by road. However, due to the pandemic many people could not go out of their houses, thus impacting the visitations at the parks. We would seek to introduce a variable that could characterize overall political leanings of the state, e.g. the political party of its governor. Thus we would seek to introduce a variable that could give us insights about the seasons.
+
+**Unemployment:** Prior to the pandemic, the unemployment rate was lower than during the pandemic. People used to spend on entertainment and social gatherings as part of the usual norm. This was impacted as a number of businesses were shut and unemployment resulted in people, focusing on day to day cost of living and reduced spending on entertainment and social gatherings, like visiting national parks for recreational activities. So we could also seek to introduce a variable which would account for the unemployment rate on a monthly time period.
+
+# Section 8: Conclusion
+
+Overall, the economy has been severely impacted by COVID-19. Statewide travel guidelines forced residents to avoid non-essential out-of-state and out-of-country travel throughout the pandemic. We observe that changes in monthly park visits compared to previous year have increased during the pandemic. We believe this is due to reduced out-of-state travel. This infers a change in behavior where travelers are more open to visiting National Parks and outdoor recreational activities. 
+
+The top 3 visited locations in 2021 were the Great Smokey Mountains, Blue Ridge Parkway, and Golden Gate National Recreation Area where we have seen growth in visitors at the parks.
+
+To come to this conclusion, we have reviewed the entire data across the United States over the period - 2019-Jun 2021. We see a correlations between park  visits , COVID cases, deaths and vaccination numbers.
+
+
+# Section 9: References
+
+[1]  Tourist arrivals down 87% in January 2021 as UNWTO calls for stronger coordination to restart tourism. UNWTO. July 2021. 
+https://www.unwto.org/news/tourist-arrivals-down-87-in-january-2021-as-unwto-calls-for-stronger-coordination-to-restart-tourism 
+
+[2] Why Travel Matters. Visit California. (n.d.). https://industry.visitcalifornia.com/partner-opportunities/programs/why-travel-matters 
+
+[3]
+https://www.businessinsider.com/are-national-parks-open-covid-19-coronavirus-united-states-nps-2020-5
+
+[4]
+https://irma.nps.gov/STATS/Reports/National
+
+[5]
+https://github.com/nytimes/covid-19-data/tree/master/live
+
+[6]
+https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh
+
+[7] National Population Totals: 2010-2020. United States Census Bureau. Annual Estimates of the Resident Population for the Nation and States.
+https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-totals-national.html 
+\newpage
+
+# Section 10: Appendix
+
+```{r load data appendix, echo=FALSE}
+df <- read.csv("~/lab-2-section11-lab2-team2/data/processed/modeling_data/parks_cases_vaccines.csv")
+```
+
+```{r convert month_year value from character to date and add to df appendix, echo=FALSE}
+month_year = as.yearmon(df$this_month, format="%y-%b")
+
+df <- df %>%
+  mutate(this_month2 = month_year)
+
+```
+
+```{r regions, echo=FALSE}
+Alaska <- df[df$region == "Alaska Region",]
+Intermountain <- df[df$region == "Intermountain Region",]
+Midwest <- df[df$region == "Midwest Region",]
+Capital <- df[df$region == "National Capital Region",]
+Northeast <- df[df$region == "Northeast Region",]
+Pacific <- df[df$region == "Pacific West Region",]
+Southeast <- df[df$region == "Southeast Region",]
+```
+
+```{r Alaska cleaning and plotting, echo=FALSE}
+Alaska <- subset(Alaska, select = c(this_month2,State,X..Fully.Vaxed))
+Alaska <- distinct(Alaska)
+Alaska <- Alaska[Alaska$X..Fully.Vaxed != 0 , ]
+
+Alaska_plot <- Alaska %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col() +
+  labs( 
+    title    = 'Alaska Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Alaska_plot
+
+```
+
+```{r Intermountain cleaning and plotting, echo=FALSE}
+Intermountain <- subset(Intermountain, select = c(this_month2,State,X..Fully.Vaxed))
+Intermountain <- distinct(Intermountain)
+Intermountain <- Intermountain[Intermountain$X..Fully.Vaxed != 0 , ]
+
+Intermountain_plot <- Intermountain %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Intermountain Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Intermountain_plot
+```
+
+```{r Midwest cleaning and plotting, echo=FALSE}
+Midwest <- subset(Midwest, select = c(this_month2,State,X..Fully.Vaxed))
+Midwest <- distinct(Midwest)
+Midwest <- Midwest[Midwest$X..Fully.Vaxed != 0 , ]
+
+Midwest_plot <- Midwest %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Midwest Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Midwest_plot
+```
+
+```{r Capital cleaning and plotting, echo=FALSE}
+Capital <- subset(Capital, select = c(this_month2,State,X..Fully.Vaxed))
+Capital <- distinct(Capital)
+Capital <- Capital[Capital$X..Fully.Vaxed != 0 , ]
+Capital <- Capital[Capital$State != "New York", ]
+
+Capital_plot <- Capital %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Capital Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Capital_plot
+```
+
+```{r Northeast cleaning and plotting, echo=FALSE}
+Northeast <- subset(Northeast, select = c(this_month2,State,X..Fully.Vaxed))
+Northeast <- distinct(Northeast)
+Northeast <- Northeast[Northeast$X..Fully.Vaxed != 0 , ]
+
+Northeast_plot <- Northeast %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Northeast Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Northeast_plot
+```
+
+```{r Pacific cleaning and plotting, echo=FALSE}
+Pacific <- subset(Pacific, select = c(this_month2,State,X..Fully.Vaxed))
+Pacific <- distinct(Pacific)
+Pacific <- Pacific[Pacific$X..Fully.Vaxed != 0 , ]
+
+Pacific_plot <- Pacific %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Pacific Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Pacific_plot
+```
+
+```{r Southeast cleaning and plotting, echo=FALSE}
+Southeast <- subset(Southeast, select = c(this_month2,State,X..Fully.Vaxed))
+Southeast <- distinct(Southeast)
+Southeast <- Southeast[Southeast$X..Fully.Vaxed != 0 , ]
+
+Southeast_plot <- Southeast %>% 
+  ggplot() +
+  aes(x=this_month2, X..Fully.Vaxed, fill = State) +
+  geom_col(position = "dodge") +
+  labs( 
+    title    = 'Southeast Region Vaccinations',
+    x        = 'Year-Month',
+    y        = 'State Vaccination Percentage',
+    color     = 'State'
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ylim(0,75)
+Southeast_plot
+```
+
+Regression results for Models 2a, 4a from Set 1 models are shown below. They are depicted by (1) and (2) respectively in the table.
+
+``` {r model comparisons 2a, 4a, echo=FALSE, message=FALSE, warning=FALSE}
+star <- stargazer(
+  #model_2a,
+  model_2a,  
+  #model_3a,
+  model_4a,  
+  #model_5a
+  
+  type = 'text',
+  header=FALSE, # to get rid of r package output text
+  no.space = TRUE, # to remove the spaces after each line of coefficients
+  column.sep.width = "0.05pt", # to reduce column width
+  font.size = "tiny", # to make font size smaller
+  align = TRUE,
+  #dep.var.labels = "Park visits",
+  dep.var.labels.include = TRUE
+)
+```
+
+
+Models 2b, 5b from Set 2 models are shown below. They are depicted by (1) and (2) in the table below. These are variations of models that were run outside of the core results described in the report and are placed here for reference.
+
+``` {r model comparisons 2b, 4b, echo=FALSE, message=FALSE, warning=FALSE}
+star <- stargazer(
+  #model_2a,
+  model_2b,  
+  #model_3a,
+  model_4b,  
+  #model_5a
+  
+  type = 'text',
+  header=FALSE, # to get rid of r package output text
+  no.space = TRUE, # to remove the spaces after each line of coefficients
+  column.sep.width = "0.05pt", # to reduce column width
+  font.size = "tiny", # to make font size smaller
+  align = TRUE,
+  #dep.var.labels = "Park visits",
+  dep.var.labels.include = TRUE
+)
+```
+
+Summary result for Model 5b is as follows.
+
+``` {r model 5b summary}
+summary(model_5b)
