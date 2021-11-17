@@ -35,8 +35,6 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   - Exploratory data analysis
   - Data cleaning
     
-   <br/>
-    
   ### Report and Code
   [Project Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/W203%20Final%20Report%2C%20Peter%2C%20Frances%2C%20Nitin.pdf)
   
