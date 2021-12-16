@@ -82,7 +82,7 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   Given the limitation of the data and the approach this research relies upon, the findings are for exploratory purposes and are not intended to draw any conclusions. The report and exploratory notebook are linked below.
   
   ### Tools Used
-  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white"/> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
   
   ### Report and Code
   [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/aliens/Project2_Final_Report.pdf)
@@ -91,7 +91,7 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   </details>
 
 <details>
-  <summary><b> Command Line Playable Chess Game </b></summary>
+  <summary><b>Playable Chess Game </b></summary>
   
   ### Description
   
@@ -114,7 +114,23 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
 </details>
 
 <details>
-  <summary><b> Tracking User Activity Pipeline</b></summary>
+  <summary><b>Bay Area Bikeshare Analytics</b></summary>
+  
+  ### Description
+  I analyze data from [Lyft Bay Wheels](https://www.lyft.com/bikes/bay-wheels) to provide insight that will increase ridership. After analysis and queries, I recommend creating a slightly cheaper commuter plan that allows users to ride bikes only during commuter hours. My second recommendation is to offer 3 months of free membership to new customers that subscribe to a yearly plan in the cities of San Jose, Palo Alto, Redwood City and Mountain View. 
+  
+  The analysis process and the reasoning behind these recommendations can be found in the report outlined below.
+  
+  ### Tools Used
+  <img src="https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white"/> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white"/> <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+  
+  ### Report
+  [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/bikeshare/Project_1.ipynb)
+  
+</details>
+
+<details>
+  <summary><b>Tracking User Activity Pipeline</b></summary>
   
   ### Description
 This is a pipeline that lands user activity data from an online exam website to Hadoop Filesystem in a queryable format. Using Google Cloud Platform and Docker Containers, I fetch a nested json file of online exam data and build a pipeline using Kafka and Spark to prepare the data for analysis. PySpark queries are used to perform analytics on the data. The report linked below has a detailed breakdown of how my pipeline was built as well as my findings from this dataset.
