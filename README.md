@@ -74,6 +74,23 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   </details>
 
 <details>
+  <summary><b> UFO Sightings And Proximity To Military Bases Exploratory Data Analysis</b></summary>
+  
+  ### Description
+  This research examines various relationships between UFO sightings, military bases, and population in the United States. The data suggests that UFO sightings have increased rapidly in the early 2010s and less so in recent years. States with higher populations tend to have more sightings. After we normalize the data against population, Vermont, Montana, and Alaska appear to have the highest per capita sightings. Interestingly, Vermont and Alaska are among the states with the most military bases per capita as well. Our data demonstrates a positive relationship between the number of UFO sightings and the number of military bases. 
+  
+  Given the limitation of the data and the approach this research relies upon, the findings are for exploratory purposes and are not intended to draw any conclusions. The report and exploratory notebook are linked below.
+  
+  ### Tools Used
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+  
+  ### Report and Code
+  [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/aliens/Project2_Final_Report.pdf)
+  
+  [Exploratory Notebook](https://github.com/superpeter55/superpeter55/blob/main/Projects/aliens/Project_Code.ipynb)
+  </details>
+
+<details>
   <summary><b> Command Line Playable Chess Game </b></summary>
   
   ### Description
