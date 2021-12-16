@@ -42,6 +42,33 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   </details>
 
 <details>
+  <summary><b> Understanding User Behavior Through Event Tracking </b></summary>
+  
+  ### Description
+  
+  The data engineering court at Renaissance Games is pleased to present our lords and ladies with an analytics pipeline to keep a watchful eye on the activities of the merchants within the market and also to note the comings of knights and ladies in the guilds.
+  
+  Our sorcery (stack) of choice is as follows:
+  
+  - Apache Bench - "game client" sending player events into data pipeline
+  - Flask - app that runs the game Application Programming Interface
+  - Kafka - platform for ingesting streaming data and passing to downstream applications
+  - Spark - tool to filter and transform data and push to or pull from HDFS (Hadoop Distributed File System)
+  - Hadoop - distributed file system for managing parquet files
+  - Hive - intermediary to track and agree upon schema and create tables
+  - Presto - query tool for summarizing and reporting analytics on purchases and guild activity
+  
+  For a detailed breakdown of randomly and manually generated events, prithee see the project report linked below.
+
+  Gramercy
+  
+  ### Additional Tools Used
+  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white"/> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white"/> <img src="https://img.shields.io/badge/windows%20terminal-4D4D4D?style=for-the-badge&logo=windows%20terminal&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+  
+  ### Report and Code
+  </details>
+
+<details>
   <summary><b> Command Line Playable Chess Game </b></summary>
   
   ### Description
