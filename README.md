@@ -66,6 +66,11 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/> <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen"/> <img src="https://img.shields.io/badge/Google_Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white"/> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white"/> <img src="https://img.shields.io/badge/windows%20terminal-4D4D4D?style=for-the-badge&logo=windows%20terminal&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
   
   ### Report and Code
+  [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/data-engineering-final-project/Project_3.ipynb)
+  
+  [Game API](https://github.com/superpeter55/superpeter55/blob/main/Projects/data-engineering-final-project/game_api.py)
+  
+  [Docker Compose File](https://github.com/superpeter55/superpeter55/blob/main/Projects/data-engineering-final-project/docker-compose.yml)
   </details>
 
 <details>
