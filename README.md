@@ -100,7 +100,7 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   <summary><b> Tracking User Activity Pipeline</b></summary>
   
   ### Description
-This is a pipeline that lands data in Hadoop Filesystem in a queryable format. Using Google Cloud Platform and Docker Containers to run all my applications, I fetch a nested json file of online assessment data and build a pipeline using Kafka and Spark. PySpark queries are used to perform analytics on the data. The report linked below has a detailed breakdown of how my pipeline was built as well as my findings from this dataset.
+This is a pipeline that lands user activity data from an online exam website to Hadoop Filesystem in a queryable format. Using Google Cloud Platform and Docker Containers, I fetch a nested json file of online exam data and build a pipeline using Kafka and Spark to prepare the data for analysis. PySpark queries are used to perform analytics on the data. The report linked below has a detailed breakdown of how my pipeline was built as well as my findings from this dataset.
     <br/>
   ### Tools Used
 
