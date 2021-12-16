@@ -78,7 +78,9 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   
   ### Description
   
-  This is an interactive chess game that is playable at the command line of a terminal. Simply run the chess.py file linked below in a terminal to play. This application was developed using best practices in Object Oriented Programming. Another neat feature of this project is a menu system that has 4 options for the user to choose. Option 1 is to begin a game of chess. Option 2 brings up a URL to the rules of chess wikipedia page if you are unfamiliar with chess. Option 3 brings up instructions on how to make moves in this app game and option 4 exits the app. An example of what the board looks like in a terminal is shown below. The pieces are represented by abbreviations outlined in [this](https://github.com/superpeter55/superpeter55/blob/main/Projects/chess/Piece%20Keys.txt) file. Feel free to download the chess.py file and play!
+  An interactive chess game that is playable at the command line of a terminal. Simply run the chess.py file linked below in a terminal to play. Development was executed using best practices in Object Oriented Programming. 
+  
+  The game features a menu system that has 4 options for the user to choose. Option 1 is to begin a game of chess. Option 2 brings up a URL to the rules of chess wikipedia page. Option 3 brings up instructions on how to make moves and option 4 exits the app. The game pieces are represented by abbreviations outlined in [this](https://github.com/superpeter55/superpeter55/blob/main/Projects/chess/Piece%20Keys.txt) file. Feel free to download the chess.py file and play!
   
   <img src="https://github.com/superpeter55/superpeter55/blob/main/Projects/chess/example%20image.PNG" />
   
@@ -95,10 +97,10 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
 </details>
 
 <details>
-  <summary><b> Tracking User Activity </b></summary>
+  <summary><b> Tracking User Activity Pipeline</b></summary>
   
   ### Description
-The purpose of this project is build a pipelane that lands data in Hadoop Filesystem in a queryable format. Using Google Cloud Platform and Docker Containers to run all my applications, I fetch a nested json file of online assessment data and built a pipeline using Kafka and Spark. I also used PySpark queries to find some basic information about the data. The report linked below has a detailed breakdown of how my pipeline was built as well as my findings from this dataset.
+This is a pipeline that lands data in Hadoop Filesystem in a queryable format. Using Google Cloud Platform and Docker Containers to run all my applications, I fetch a nested json file of online assessment data and build a pipeline using Kafka and Spark. PySpark queries are used to perform analytics on the data. The report linked below has a detailed breakdown of how my pipeline was built as well as my findings from this dataset.
     <br/>
   ### Tools Used
 
