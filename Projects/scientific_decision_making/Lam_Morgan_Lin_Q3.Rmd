@@ -1,0 +1,114 @@
+---
+title: 'Lab 1: Question 3'
+author: "Bruce Lam, Peter Morgan, Mia Yin"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r load packages, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2) 
+library(kableExtra)
+library(tidyverse) # if you want more, but still core, toolkit
+library(gridExtra)
+```
+
+```{r load and clean SPSS dataset, echo=FALSE, warning=FALSE, message=FALSE}
+library(foreign)
+filename <- "anes_timeseries_2020_spss_20210324.sav"
+# SPSS
+dataset = read.spss(filename, use.value.label=TRUE, to.data.frame=TRUE)
+```
+
+## Importance and Context
+How might a person's belief in scientific decision making influence perception of their governor’s response to the COVID-19 pandemic?
+
+In the first quarter of 2020, the COVID-19 virus indiscriminately began its rampage on the unsuspecting citizens of the United States, resulting in 605 thousand deaths and over 33 million infections at the time of this report. Top scientists across the world banded together to inform and advise world leaders on actions to take to contain the contagion. Many leaders rose to the occasion and took decisive action to lock down the communities in their charge, forcing businesses to close. Other leaders waited to see, trading off the short term economic buoy for widespread viral outbreaks. A number of controversies over mask wearing, government aid, and social distancing emerged from the national leadership level, pitting politics against science. In hindsight, both science and leadership were tested to the limit. Is there a relationship between voters who believe science is important for making decisions around COVID-19 and their respective approval ratings of their governors’ response to the pandemic? The answer to this question could provide insight into the stated beliefs of voters with their revealed preferences and may also inform governors of their constituents’ sentiments if and when they base their decisions on scientific advice.
+
+```{r load and clean data for Q3, echo=FALSE, warning=FALSE, message=FALSE}
+raw_data_q3 <- dataset %>% select(V202310, V201145)
+raw_data_q3 <- raw_data_q3 %>% rename(belief_in_science = V202310, governor_approval = V201145)
+
+
+table1 <- addmargins(table(raw_data_q3))
+
+table1 %>% kable("html", align = "ccc", caption = "table 1: scientific decisions and governor sentiment re: COVID-19") %>% kable_classic_2(full_width = F, position = "float_left", font_size = 5) %>% row_spec(0, bold = TRUE) %>% column_spec(1, bold = TRUE) %>% column_spec(1:5, width = ".01in") %>% add_header_above(c(" ", "Governor approval" = 5)) %>%
+  pack_rows("Importance of science re: COVID-19", 1, 9)
+
+test_data_q3 <- raw_data_q3 %>% filter(belief_in_science == '5. Extremely important' | belief_in_science == '4. Very important' | belief_in_science == '3. Moderately important' | belief_in_science == '2. A little important' | belief_in_science == '1. Not at all important')
+test_data_q3 <- test_data_q3 %>% filter(governor_approval == '2. Disapprove' | governor_approval == '1. Approve')
+
+table2 <- addmargins(table(test_data_q3)) 
+
+table2 %>% kable("html", align = "ccc", caption = "table 2: invalid responses removed for hypothesis testing") %>% kable_classic_2(full_width = F, position = "right", font_size = 5) %>% row_spec(0, bold = TRUE) %>% column_spec(1, bold = TRUE) %>% column_spec(1:5, width = ".01in") %>% add_header_above(c(" ", "Governor approval" = 5)) %>%
+  pack_rows("Importance of science re: COVID-19", 1, 9)
+```
+
+## Description of Data
+In the peak of the 2020 global pandemic, American National Election Studies (ANES) conducted observational surveys before and after the 2020 presidential election with the intention to inform the explanations of election outcomes. This data for this report is drawn from the 2020 ANES Time Series study.
+We selected 2 questions to explore whether people who believe that science is important for making government decisions about COVID-19 are more likely to disapprove of the way their governor handled the pandemic. One question with pertinent information was, “In general, how important should science be for decisions about COVID-19?” This post-election question was reported on a 5 point Likert scale with responses ranging from 1 - “Not at all important” to 5 - “Extremely important”. In addition, invalidated responses were also coded with values between -5 and -9 for reasons ranging from interview breakoff to refusal to interview. To gather data on sentiment regarding a governor’s response to the pandemic, we chose the pre-election question, “Approve or disapprove respondent's governor handling COVID-19.” The responses to this question were either 1. Approve or 2. Disapprove with -9. Refused and -8. Don’t know as invalid responses. We tallied the combined responses of both questions in table 1: science belief and governor sentiment re: COVID-19 to arrive at a total of 8280. On initial observation 
+the data is heavily weighted towards a high level of importance on involving science in decision making. 
+
+Chart 1 further clarifies this finding as the histogram is weighted towards the right where the choices of very and extreme importance reside. Based on the density histogram in chart 2, it would be unlikely to find equal proportions of people with scientific decision making leanings who disapprove of their governor’s response to the pandemic and vice versa. 
+By removing the invalid responses, we subset the relevant 7345 responses for our hypothesis testing. 
+Hypothesis:
+Based on the question to be answered and the relevant survey responses, the null hypothesis is that for the population who believes that science is important for decision making regarding COVID-19, there is no difference between the proportion who disapprove and approve of their governor's responses to COVID-19.
+\[ H_0: p[disapprove \vert science_{important}] = .5 \]
+The alternative hypothesis is that for the population who believes that science is important for decision making regarding COVID-19, there is a difference between the proportion who disapprove and approve of their governor's responses to COVID-19.
+\[ H_a: p[disapprove \vert science_{important}] \neq .5 \]
+<P style="page-break-before: always">
+Chart 2:Histograms of science for decisions
+
+```{r histogram for data, echo=FALSE, warning=FALSE, message=FALSE}
+raw_data_q3 <- raw_data_q3 %>% mutate(belief_in_science=recode(belief_in_science, '5. Extremely important'= 5, '4. Very important'= 4, '3. Moderately important'= 3, '2. A little important'= 2, '1. Not at all important'= 1, '-5. Interview breakoff (sufficient partial IW)' = -5, '-6. No post-election interview' = -6, '-7. No post-election data, deleted due to incomplete interview' = -7, '-9. Refused' = -9 ))
+
+raw_data_q3 <- raw_data_q3 %>% mutate(governor_approval=recode(governor_approval, '1. Approve' = 1, '2. Disapprove' = 2, '-9. Refused' = -9, '-8. Don\'t know' = -8))
+plot1 <- ggplot(raw_data_q3, aes(x = belief_in_science)) + geom_bar(stat = "density") + xlab("Importance level(see desc. of data)")+ scale_x_continuous(breaks=-9:5,labels=c(-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5))
+plot2 <- ggplot(raw_data_q3, aes(x = belief_in_science)) + geom_bar(stat = "count") + xlab("Importance level(see desc. of data)")+ scale_x_continuous(breaks=-9:5,labels=c(-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5))
+require(gridExtra)
+grid.arrange(plot1, plot2, ncol=2, heights=c(1,1))
+
+```
+
+
+
+```{r select data for Q3, include = FALSE, echo=FALSE, warning=FALSE, message=FALSE}
+
+
+filtered_q3 <- raw_data_q3 %>% filter(belief_in_science >= 2)
+filtered_q3 <- filtered_q3 %>% mutate(governor_approval=recode(governor_approval, '1' = 0, '2' = 1))
+
+more_disapprove = sum(filtered_q3$governor_approval == 1, na.rm = T)
+trials = sum(filtered_q3$governor_approval == 1 | filtered_q3$governor_approval == 0, na.rm = T)
+
+#probability that disapprove
+more_disapprove/trials
+
+binom.test(more_disapprove, trials)
+
+r <- ((trials - more_disapprove) - more_disapprove)/trials
+r
+
+
+```
+## Most appropriate test 
+Belief in the importance of science to decision making was measured on an ordinal scale and converted to a Bernoulli variable while governor approval was transformed into Bernoulli variable after filtering. The question of interest can be interpreted as the measurement of approval and disapproval of the sample of people who believe that science is important in decision making regarding COVID-19, so a sign test for statistical significance is appropriate given the following requirements. 
+
+1. IID
+While the sampling protocols were not explicitly shared by ANES, the longevity, intention of the institution, and support by academically rigorous establishments like Stanford University, University of Michigan and the National Science Foundation provide confidence that the samples were collected with the intention of i.i.d. The number of invalid responses is also low, indicating no systematic reason for invalid responses. However, people who choose to participate in these kinds of surveys though may have underlying beliefs in common with each other. 
+
+2. Approximately normal data
+This particular sample is weighted in favor of science for decision making, and since the sample size and measurement proportions are large at 62% for approval and 38% for disapproval given belief in science, the normal approximation to the binomial distribution is appropriate.
+
+3. Large sample size
+Our sample size is substantially above 30 at 7228.
+
+4. The data is nether interval, nor ratio (metric)
+The data is ordinal converted to Bernoulli with 2 measures on the same sample, so the sign test is appropriate.
+
+## Test, results and interpretation
+The results of the sign test are a p-value < 2.2e-16, which is much less than .05, and a 95% confidence interval of [.360,.382], which does not include .5. Based on present evidence, we reject the null hypothesis that for the population who believes that science is important for decision making regarding COVID-19, there is no difference between the proportion who disapprove and approve of their governor's responses to COVID-19.
+
+Practically speaking, we performed a common language effect size calculation returning a correlation value of .26. This implies that while we have a statistically significant result, this relationship would be difficult to leverage as it implies that people who believe science is important for decision making regarding COVID-19 have only a 26% chance of disapproving of their governor’s response to the pandemic. The disconnect between stated and revealed preference challenges governors to make decisions based on survey responses.
