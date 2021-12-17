@@ -102,10 +102,19 @@ with its intended audience.
 age, we can then conduct follow up research on what messages are more effective on certain age groups.
 Research like this can lead to more informed decisions for campaigns and individual candidates.
   
+  In this research we have determined that democratic voters mean age is not the same as republican voters
+mean age at a 95% confidence level. However, the true difference is not very large which means a low
+practical significance and results that do not help us too much. If anything, we did learn that to understand
+political party demographics in America, we must look beyond age.
+  
   ### Tools Used
   <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white"/> <img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
   
   ### Techniques Used
+  - Hypothesis Testing (Two Sample T-Test)
+  - Practical Significance Evaluation (Cohen's D)
+  - Data Visualization
+  - Data Collecting / Cleaning
   
   ### Report and Code
   [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/voter_ages/Lab%201_%20Question%201.pdf)
