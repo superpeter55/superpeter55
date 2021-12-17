@@ -24,7 +24,7 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 # Projects
 
 <details>
-  <summary><b> Are National Parks becoming more attractive to locals during and post-pandemic? </b></summary>
+  <summary><b> Are National Parks Becoming More Attractive To Locals Post-Pandemic? </b></summary>
     
   ### Description
   
