@@ -91,6 +91,30 @@ World Tourism Organization (UNWTO), international tourist arrivals have fallen 7
   </details>
 
 <details>
+  <summary><b>Are Democratic Voters Older Or Younger Than Republican Voters In 2020?</b></summary>
+  
+  ### Description
+  In American politics, understanding voter demographics is very important. A good understanding of voter
+demographics allows political parties and individual candidates to portray a message that can better connect
+with its intended audience.
+  
+  Our research question scratches the surface of achieving this goal. By understanding basic demographics like
+age, we can then conduct follow up research on what messages are more effective on certain age groups.
+Research like this can lead to more informed decisions for campaigns and individual candidates.
+  
+  ### Tools Used
+  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white"/> <img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white"/> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+  
+  ### Techniques Used
+  
+  ### Report and Code
+  [Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/voter_ages/Lab%201_%20Question%201.pdf)
+  
+  [R Markdown File](https://github.com/superpeter55/superpeter55/blob/main/Projects/voter_ages/Morgan_Lin_Lam_%20Q1.Rmd)
+  
+</details>
+
+<details>
   <summary><b>Playable Chess Game </b></summary>
   
   ### Description
