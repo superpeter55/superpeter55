@@ -2,7 +2,13 @@
 
 # About Me
 
-Currently a work in progress but feel free to take a look at what I have so far!
+Data Science Masters student at UC Berkeley School of Information. I am passionate about providing companies with the insight they need to make correct decisions from data.
+
+I have experience using various data science tools to deliver value to businesses. This includes Python programming modules like Numpy, Pandas, Matplotlib in conjunction with Jupyter Notebooks to produce yearly projections. I have also used R Markdown to produce KPI reports.
+
+I also have project experience with statistical analysis. This includes hypothesis testing, linear regression, and statistical modeling. I used these statistical tools in conjunction with R to build a causal model between national park visits and other covariates like COVID cases, vaccination % and others.
+
+I have familiarity working with data engineering tools as well including CLI, GitHub, Google Cloud, BigQuery, Kafka, Spark and others. I believe my passion for using data to improve business decisions along with my skills would make me an asset to any company.
 
 # Projects
 
