@@ -14,7 +14,7 @@ Currently a work in progress but feel free to take a look at what I have so far!
   With travel restrictions, border closures and shutdown of businesses across the globe throughout the pandemic, the
 tourism industry has taken a significant financial hit and its outlook is still uncertain. According to the United Nations
 World Tourism Organization (UNWTO), international tourist arrivals have fallen 72% between January 2020 and July
-2021 for the Americas. And for the world, the overall decline in the same period was reported to be 85%.
+2021 for the Americas. For the world, the overall decline in the same period was reported to be 85%.
   
   This report seeks to answer the following research question. With statewide travel guidelines to avoid non-essential out-of-state and out-of-country travel in effect throughout the pandemic, our hypothesis is that this would heighten residents’ interest in taking local trips and exploring nature in sites near them during and shortly post-reopening. The purpose of this research is to examine the effect of the pandemic on visitation to national parks. Our goal is to determine the relationship between the number of visitations to parks in the United States and variables including the number of COVID-19 cases and vaccination rate. We will use a causal model to address this research question and determine if higher vaccination rates and lower COVID cases cause more national park visits.
 
