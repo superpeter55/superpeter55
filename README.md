@@ -22,6 +22,31 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 - Least Squares Regression Modeling
 
 # Projects
+<details>
+  <summary><b> Does credibility in the scientific community translate to credibilitly in the general public? </b></summary>
+    
+  ### Description
+  
+  There's a growing phenomena of skepticism and outright rejection of scientific findings across the world, critically dubbed the Anti-Science movement. The common hypothesis is that people are less likely to accept peer-reviewed, published scientific findings and more likely to accept anecdotal findings of like-minded individuals. Some of this phenomena is attributed to a Fake News crisis, where it has become increasingly easy to spread misinformation over social media platforms. The assumption in research regarding Fake News is that the creators are intentionally misleading people to believe that the fake news is in fact credible. However, we posit that distrust of the scientific community has become so pervasive that it is instead the association with a peer reviewed scientific journal that makes new findings less credible to the general public
+  
+  Contrary to our hypothesis, we discovered that the perception of peer review increased the trustworthiness of claims. After running our experiment, we found that those who received treatment were around 10% more likely to trust the claim. This result was statistically significant at a 95% confidence level.
+
+  ### Tools Used
+   
+  <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" /> <img src="https://img.shields.io/badge/Markdown-000000?style=for-the-badge&logo=markdown&logoColor=white" /> <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" />
+   <br/>
+    
+  ### Techniques Used
+  - Experimental Design
+  - Power Analysis
+  - Non-Compliance and Attrition Analysis
+  - Linear Modeling
+    
+  ### Report and Code
+  [Project Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/scientific_credibility/Project.pdf)
+  
+  [R Markdown for Report](https://github.com/superpeter55/w241_final/blob/main/Project.rmd)  
+  </details>
 
 <details>
   <summary><b> Are National Parks Becoming More Attractive To Locals Post-Pandemic? </b></summary>
