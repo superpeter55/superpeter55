@@ -23,7 +23,7 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 
 # Projects
 <details>
-  <summary><b> Does credibility in the scientific community translate to credibilitly in the general public? </b></summary>
+  <summary><b> Does Credibility in the Scientific Community Translate to Credibilitly in the General Public? </b></summary>
     
   ### Description
   
@@ -47,6 +47,37 @@ I have familiarity working with data engineering tools as well including CLI, Gi
   
   [R Markdown for Report](https://github.com/superpeter55/w241_final/blob/main/Project.rmd)  
   </details>
+
+<details>
+  <summary><b> Classification of Posts on Random Acts of Pizza Reddit Forum </b></summary>
+    
+  ### Description
+  
+  Random Acts of Pizza is a reddit forum where users request pizza in the hopes that another member of the forum will purchase pizza for them. Posts in this forum typically consist of a user providing a reason as to why they deserve to be sent a pizza. The purpose of this project was to classify at the time of the post, which posts would receive pizza.
+  
+  Feature engineering was performed on our data and was compared against our baseline to determine which features would be useful in our model. Some of our successful features that improved performance were timestamp analysis, basic sentiment analysis, and a word count vectorization. Our features that did not increase performance include using Naive Bayes generative probabilities as a feature and normalization of numeric data. After we determined the features that were most important, we compared classifiers and found that Random Forest performed best. On our dev data, we received a score of 77% but when we submitted our results on the test data, we received a score of 55%
+  
+  ### Limitations and Lessons Learned
+  
+  The main reason we saw this drop in accuracy was because our training data was imbalanced and a small dataset. Our training data had around 4000 examples and only 25% of the examples in the training data received pizza. The test data was split 50/50 so this resulted in our model having reasonable precision but really bad recall. After submission of this project, we realized we should have optimized our classifier based on AUC instead of accuracy because it works better on imbalanced data. When we did this, we had a score of around 77%.
+
+  ### Tools Used
+   
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen" /> <img src="https://img.shields.io/badge/scikit_learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" /> <img src="https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white" /> <img src="https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white" /> <img src="https://img.shields.io/badge/Jupyter-F37626.svg?&style=for-the-badge&logo=Jupyter&logoColor=white" />
+   <br/>
+    
+  ### Techniques Used
+  - Supervised Machine Learning
+  - Cross Validation
+  - Feature Engineering
+  - Data Cleaning
+    
+  ### Notebook
+  [Project Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/W203%20Final%20Report%2C%20Peter%2C%20Frances%2C%20Nitin.pdf)
+  
+  [R Markdown for Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/w203_final/Final_Report.Rmd)  
+  </details>
+
 
 <details>
   <summary><b> Are National Parks Becoming More Attractive To Locals Post-Pandemic? </b></summary>
