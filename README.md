@@ -17,6 +17,7 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 
 # Skills
 - Machine Learning
+- MapReduce Framework
 - Data Analysis
 - Statistical Analysis
 - Experimental Design
