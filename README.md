@@ -21,7 +21,7 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 - Data Analysis
 - Statistical Analysis
 - Experimental Design
-- Data Visualization (Matplotlib, Seaborn, ggplot2)
+- Data Visualization (Tableau, Matplotlib)
 
 # Projects
 <details>
