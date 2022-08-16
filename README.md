@@ -25,6 +25,45 @@ I have familiarity working with data engineering tools as well including CLI, Gi
 
 # Projects
 <details>
+  <summary><b> Flight Delay Prediction </b></summary>
+    
+  ### Description
+  
+  Mitigating the logistical and financial impact of airport delays has never been more
+important for aviation logistics companies to compete and succeed, and the new
+forecasting tool from the Flight Delay All-Stars can give these companies 2 hours
+advance notice if a flight will be delayed by at least 15 minutes, and do so with AUCROC performance of over 80.7%. The AllStars accomplished this feat by creating a data pipeline of flight, weather, and
+airport data, which when processed, feeds a logistic regression model with a logloss cost function. Blocked time-series cross validated data, rebalanced by
+undersampling non-delayed flights from 2015-2020, is used to train the model, and
+2021 data is used for testing. While features used for the model were selected from
+the original data pipeline via linear regression using L1 regularization, additional
+features were engineered, such as the frequency of delays from the same airport in
+earlier time-windows, the pagerank of the airport graph and an airline ranking. In the
+final logistic regression model, grid search was used to tune the regularization
+parameter. Finally, the results were compared to an XGBoost ensemble model. Our score of 80.7% AUC ranked as the highest score in the entire class.
+
+  ### Tools Used
+   
+  <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=darkgreen" /> <img src="https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16" /> <img src="https://img.shields.io/badge/microsoft%20azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white" />
+   <br/>
+    
+  ### Techniques Used
+  - Machine Learning
+  - Data Cleaning and Joining
+  - Feature Engineering
+  - Feature Selection Using L1 Regularization
+  - Undersampling of Unblanced Data
+  - Blocked Time Series Cross Validation
+  - Model Iteration (Logistic Regression, Decision Trees, Random Forest, XGBoost)
+  - Parameter and Hyperparameter Tuning
+    
+  ### Report and Code
+  [Project Report](https://github.com/superpeter55/superpeter55/blob/main/Projects/scientific_credibility/Project.pdf)
+  
+  [R Markdown for Report](https://github.com/superpeter55/w241_final/blob/main/Project.rmd)  
+  </details>
+
+<details>
   <summary><b> Does Credibility in the Scientific Community Translate to Credibilitly in the General Public? </b></summary>
     
   ### Description
