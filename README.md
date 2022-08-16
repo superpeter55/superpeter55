@@ -59,6 +59,7 @@ parameter. Finally, the results were compared to an XGBoost ensemble model. Our 
     
   ### Report and Code
   [Flight Delay Prediction](https://github.com/superpeter55/superpeter55/blob/main/Projects/flight_delay_prediction/FP_Section5_Group3_Phase4.pdf)
+</details>
 
 <details>
   <summary><b> Does Credibility in the Scientific Community Translate to Credibilitly in the General Public? </b></summary>
