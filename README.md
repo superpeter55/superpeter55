@@ -2,7 +2,7 @@
 
 # About Me
 
-Data Analyst and Data Science Masters student at UC Berkeley School of Information. I am passionate about providing companies with the insight they need to make correct decisions from data.
+Data Scientist and Data Science Masters student at UC Berkeley School of Information. I am passionate about providing companies with the insight they need to make correct decisions from data.
 
 I have experience using various data science tools to deliver value to businesses as a data analyst. This includes Python programming modules like Numpy, Pandas, Matplotlib in conjunction with Jupyter Notebooks to produce yearly projections. I have also used R Markdown to produce KPI reports.
 
