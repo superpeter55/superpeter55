@@ -4,7 +4,7 @@
 
 Data Analyst at Thomann Asphalt and UC Berkeley Data Science Masters alumni. I am passionate about providing companies with the insight they need to make correct decisions from data.
 
-As a Data Analyst at Thomann Asphalt, I leverage existing data to inform decisions as well as develop and implement data strategy to increase the capability to make data driven decisions. Doing this regularly includes work with Python, SQL, Tableau Dashboarding, Classical Machine Learning, and Development / Deployment of ETL pipelines.
+As a Data Analyst at Thomann Asphalt, I leverage existing data to inform decisions as well as develop and implement data strategy to increase the capability to make data driven decisions. This includes working with Python, SQL, Tableau Dashboarding, Classical Machine Learning, and Development / Deployment of ETL pipelines.
 
 # Tools
 
